@@ -9,7 +9,6 @@ import pandas as pd
 
 def page (url):
 
-#url='https://www.imdb.com/'
 
     headers = requests.utils.default_headers()
     headers.update({
@@ -25,6 +24,8 @@ def page (url):
     
     return(soup)
 
+
+
 detectadas=0
 no_detectadas=0
 
@@ -34,14 +35,13 @@ peliculas = "Peliculas.txt"
 with open(peliculas, "r") as archivo:
     
     
-    
-    
     for linea in archivo:
         pelicula=linea.replace(' ','+')
     
-        print(pelicula)
+        print(linea)
         
-        tmdb=page(tmdb_query+linea)
+        #tmdb=page(tmdb_query+linea)
+        tmdb=page(tmdb_query+pelicula)
         
         titulos=tmdb.find_all('a', 'result')
         
