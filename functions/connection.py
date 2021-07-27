@@ -1,3 +1,4 @@
+#from _typeshed import NoneType
 import requests
 from bs4 import BeautifulSoup
 import sys
@@ -19,6 +20,116 @@ def page (url):
     #print(soup.head.title)
     
     return(soup)
+
+def pages_num(tmdb):
+    
+    max_page=0
+    paginas = tmdb.find_all('div', 'pagination')
+    for pagina in paginas:
+        
+        if pagina['custom_path_info']== '/search/movie':
+            numeros_pag=pagina.find_all('a')
+            max_page=numeros_pag[-2].get_text()
+     
+    print('Cantidad de paginas:', max_page)
+    max_page=int(max_page)            
+    return max_page
+        
+
+def movie_links(tmdb):
+    
+    resultados = tmdb.find_all('a', 'result')
+    
+    links=[]
+    
+    for resultado in resultados:
+
+        if resultado['data-media-type']== 'movie':
+            
+            link = resultado.attrs['href']
+            if link in links:
+                pass
+            else:
+                links.append(link) 
+                
+    return links   
+
+def get_titles(links):
+    
+    for link in links:
+        scrap = page('https://www.themoviedb.org/'+link)
+
+        encabezados = scrap.find_all('section', 'images inner')
+
+        for encabezado in encabezados:
+            name = encabezado.find('h2').a.text
+            
+            
+            release=encabezado.find('span', 'release')
+            
+            if release==None:
+                pass
+            else:
+                release=release.text.strip()
+                #release=realase.get_text(strip=True)
+                
+            
+            genres=encabezado.find('span','genres')
+            
+            if genres==None:
+                pass
+            else:
+                genres=genres.get_text(strip=True)
+            
+            
+            
+            runtime=encabezado.find('span','runtime')
+            
+            if runtime==None:
+                pass
+            else:
+                runtime=runtime.text.strip()
+            
+            
+                
+            user_score=encabezado.find('div','user_score_chart')['data-percent']
+            
+            if user_score==None:
+                pass
+            
+             
+            overview=encabezado.find('div', 'overview')
+            
+            if overview==None:
+                pass
+            else:
+                overview=overview.get_text(strip=True)
+            
+            overview=overview.encode('utf-8')
+            
+            
+            
+            records=[[name,release,genres,runtime,user_score,overview]]
+            #print(records)
+            
+            
+            database(records)    
+
+         
+def next_page(tmdb):
+    paginas = tmdb.find_all('div', 'pagination')
+    
+    for pagina in paginas:
+        if pagina['custom_path_info']== '/search/movie':
+            proxima=pagina.find('a','next_page')
+            if proxima!=None:
+                proxima=proxima.attrs['href']
+                tmdb_query = 'https://www.themoviedb.org'+proxima
+                print(tmdb_query)
+                return tmdb_query
+            else:
+                pass
+    
 
 
 def database (records):
