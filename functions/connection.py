@@ -59,7 +59,7 @@ def database (records):
         
     try:
         for record in records:
-            print(record)
+            #print(record)
             cursor.execute(insert_statement, record)
         
     except Exception as e:
