@@ -59,6 +59,9 @@ def get_titles(links):
     for link in links:
         scrap = page('https://www.themoviedb.org/'+link)
 
+        id=link.split('/')
+        id=id[2]
+
         encabezados = scrap.find_all('section', 'images inner')
 
         for encabezado in encabezados:
@@ -109,7 +112,7 @@ def get_titles(links):
             
             
             
-            records=[[name,release,genres,runtime,user_score,overview]]
+            records=[[id,name,release,genres,runtime,user_score,overview]]
             #print(records)
             
             
@@ -136,7 +139,7 @@ def database (records):
     
 
     DRIVER = 'ODBC Driver 17 for SQL Server'
-    SERVER_NAME = 'sandro-X751LKB'
+    SERVER_NAME = 'localhost'
     DATABASE_NAME = 'tmdb'
 
     conn_string = f"""
@@ -163,7 +166,7 @@ def database (records):
     
     insert_statement="""
     INSERT INTO title
-    VALUES (?,?,?,?,?,?)
+    VALUES (?,?,?,?,?,?,?)
     """ 
     
         

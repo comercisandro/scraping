@@ -1,31 +1,52 @@
 
+import time
+inicio = time.time()
+
+from pypyodbc import NO_FREE_STATEMENT
 from functions.connection import movie_links, next_page, page, pages_num, movie_links, get_titles,next_page
 
 
+no_encontrados=0
+encontrados=0
+titulos= "/home/sandro/Documentos/reportv/scraping/tmdb/Peliculas.txt"
 
-tmdb_query = 'https://www.themoviedb.org/search?query='+'luca'
+with open(titulos, "r") as titulos:
 
-tmdb = page(tmdb_query)
+    for titulo in titulos:
 
-
-
-
-# BUSCANDO LA CANTIDAD DE PAGINAS
-
-
-max_page=pages_num(tmdb)
+        titulo=titulo.replace(' ','+')
 
 
-for pagnum in range(max_page):
-    
-    tmdb = page(tmdb_query)
-    
-    links=movie_links(tmdb)
-    
-    get_titles(links)
-    
-    tmdb_query=next_page(tmdb)
+        tmdb_query = 'https://www.themoviedb.org/search?query='+titulo
+
+        tmdb = page(tmdb_query)
+
+
+        # BUSCANDO LA CANTIDAD DE PAGINAS
+
+
+        max_page=pages_num(tmdb)
+
+        if max_page==0:
+            print('titulo: ',titulo,' no encontrado' )
+            no_encontrados+=1
+
+        elif max_page!=0:
+            encontrados+=1
+            print('titulo: ',titulo,' encontrado!' )
+
+        for pagnum in range(max_page):
+            
+            tmdb = page(tmdb_query)
+            
+            links=movie_links(tmdb)
+            
+            get_titles(links)
+            
+            tmdb_query=next_page(tmdb)
     
    
- 
-
+print('Titulos encontrados:',encontrados)
+print('Titulos no encontrados:',no_encontrados)
+fin = time.time()
+print('Tiempo de ejecucion', (fin-inicio)/60 ) 
